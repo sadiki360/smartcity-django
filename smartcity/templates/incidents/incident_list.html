@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block title %}Incidents{% endblock %}
+{% block page_title %}<i class="fas fa-exclamation-triangle me-2"></i>Gestion des Incidents{% endblock %}
+{% block content %}
+<div class="card mb-3">
+    <div class="card-body py-2">
+        <form method="get" class="row g-2 align-items-center">
+            <div class="col-md-3">
+                <select name="statut" class="form-select">
+                    <option value="">Tous les statuts</option>
+                    {% for val,lbl in statut_choices %}
+                    <option value="{{ val }}" {% if statut == val %}selected{% endif %}>{{ lbl }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select name="type" class="form-select">
+                    <option value="">Tous les types</option>
+                    {% for val,lbl in type_choices %}
+                    <option value="{{ val }}" {% if type_inc == val %}selected{% endif %}>{{ lbl }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">Filtrer</button>
+            </div>
+            <div class="col-md-4 text-end">
+                <a href="{% url 'incident_create' %}" class="btn btn-danger">
+                    <i class="fas fa-plus me-1"></i>Signaler un incident
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="card">
+    <div class="card-header">{{ incidents|length }} incident(s)</div>
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+            <thead><tr><th>Type</th><th>Localisation</th><th>Gravité</th><th>Statut</th><th>Durée est.</th><th>Date</th><th>Actions</th></tr></thead>
+            <tbody>
+            {% for inc in incidents %}
+            <tr>
+                <td>
+                    {% if inc.type == 'accident' %}🚗💥{% elif inc.type == 'blocage' %}🚧{% elif inc.type == 'congestion' %}🚦{% elif inc.type == 'travaux' %}👷{% else %}🚨{% endif %}
+                    {{ inc.get_type_display }}
+                </td>
+                <td>{{ inc.localisation|truncatechars:45 }}</td>
+                <td>
+                    {% if inc.gravite == 'critique' %}<span class="badge bg-dark">Critique</span>
+                    {% elif inc.gravite == 'grave' %}<span class="badge bg-danger">Grave</span>
+                    {% elif inc.gravite == 'moyen' %}<span class="badge bg-warning text-dark">Moyen</span>
+                    {% else %}<span class="badge bg-success">Faible</span>{% endif %}
+                </td>
+                <td>
+                    {% if inc.statut == 'actif' %}<span class="badge bg-danger">Actif</span>
+                    {% elif inc.statut == 'en_cours' %}<span class="badge bg-warning text-dark">En cours</span>
+                    {% else %}<span class="badge bg-success">Résolu</span>{% endif %}
+                </td>
+                <td>{{ inc.duree_estimee }} min</td>
+                <td class="small text-muted">{{ inc.date_debut|date:"d/m H:i" }}</td>
+                <td>
+                    <a href="{% url 'incident_detail' inc.pk %}" class="btn btn-sm btn-outline-info py-0 px-2"><i class="fas fa-eye"></i></a>
+                    <a href="{% url 'incident_update' inc.pk %}" class="btn btn-sm btn-outline-primary py-0 px-2"><i class="fas fa-edit"></i></a>
+                    {% if inc.statut != 'resolu' %}
+                    <a href="{% url 'incident_resoudre' inc.pk %}" class="btn btn-sm btn-outline-success py-0 px-2" title="Résoudre">✓</a>
+                    {% endif %}
+                    <a href="{% url 'incident_delete' inc.pk %}" class="btn btn-sm btn-outline-danger py-0 px-2"><i class="fas fa-trash"></i></a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="7" class="text-center text-muted py-4">Aucun incident 🎉</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

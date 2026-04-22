@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block title %}Feux de Circulation{% endblock %}
+{% block page_title %}<i class="fas fa-traffic-light me-2"></i>Feux de Circulation{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-end mb-3">
+    <a href="{% url 'feu_create' %}" class="btn btn-success">
+        <i class="fas fa-plus me-1"></i>Ajouter un feu
+    </a>
+</div>
+<div class="row g-3">
+{% for feu in feux %}
+<div class="col-xl-4 col-md-6">
+    <div class="card h-100">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <span class="fw-bold">{{ feu.intersection }}</span>
+            <span class="badge {% if feu.actif %}bg-success{% else %}bg-secondary{% endif %}">
+                {% if feu.actif %}Actif{% else %}Inactif{% endif %}
+            </span>
+        </div>
+        <div class="card-body text-center">
+            <!-- Feu de circulation visuel -->
+            <div class="d-inline-block p-3 rounded-3 mb-3" style="background:#222;min-width:80px">
+                <div class="rounded-circle mx-auto mb-2 {% if feu.etat == 'rouge' %}bg-danger{% else %}bg-dark{% endif %}" style="width:40px;height:40px;border:2px solid #555"></div>
+                <div class="rounded-circle mx-auto mb-2 {% if feu.etat == 'orange' %}bg-warning{% else %}bg-dark{% endif %}" style="width:40px;height:40px;border:2px solid #555"></div>
+                <div class="rounded-circle mx-auto {% if feu.etat == 'vert' %}bg-success{% else %}bg-dark{% endif %}" style="width:40px;height:40px;border:2px solid #555"></div>
+            </div>
+            <div class="fw-bold fs-5">{{ feu.get_etat_display }}</div>
+            <div class="text-muted small mb-3">Mode : {{ feu.get_mode_display }}</div>
+            <div class="row g-2 text-center mb-3">
+                <div class="col-4"><div class="p-2 rounded bg-danger text-white"><div class="fw-bold">{{ feu.duree_rouge }}s</div><small>Rouge</small></div></div>
+                <div class="col-4"><div class="p-2 rounded bg-warning"><div class="fw-bold">{{ feu.duree_orange }}s</div><small>Orange</small></div></div>
+                <div class="col-4"><div class="p-2 rounded bg-success text-white"><div class="fw-bold">{{ feu.duree_vert }}s</div><small>Vert</small></div></div>
+            </div>
+            <div class="d-flex gap-1 justify-content-center flex-wrap">
+                <a href="{% url 'feu_changer' feu.pk %}" class="btn btn-sm btn-warning text-dark">⟳ Changer état</a>
+                <a href="{% url 'feu_update' feu.pk %}" class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></a>
+                <a href="{% url 'feu_delete' feu.pk %}" class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></a>
+            </div>
+        </div>
+    </div>
+</div>
+{% empty %}
+<div class="col-12">
+    <div class="card"><div class="card-body text-center py-5 text-muted">
+        <i class="fas fa-traffic-light fa-3x mb-3 d-block"></i>
+        Aucun feu de circulation configuré.
+        <div class="mt-3"><a href="{% url 'feu_create' %}" class="btn btn-primary">Ajouter le premier feu</a></div>
+    </div></div>
+</div>
+{% endfor %}
+</div>
+{% endblock %}

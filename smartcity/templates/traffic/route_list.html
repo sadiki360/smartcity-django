@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block title %}Routes{% endblock %}
+{% block page_title %}<i class="fas fa-road me-2"></i>Gestion des Routes{% endblock %}
+{% block content %}
+<div class="card mb-3">
+    <div class="card-body py-2">
+        <form method="get" class="row g-2 align-items-center">
+            <div class="col-md-4">
+                <input type="text" name="q" value="{{ q }}" class="form-control" placeholder="🔍 Rechercher une route...">
+            </div>
+            <div class="col-md-3">
+                <select name="etat" class="form-select">
+                    <option value="">Tous les états</option>
+                    {% for val,lbl in etat_choices %}
+                    <option value="{{ val }}" {% if etat == val %}selected{% endif %}>{{ lbl }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100"><i class="fas fa-search"></i> Filtrer</button>
+            </div>
+            <div class="col-md-3 text-end">
+                <a href="{% url 'route_create' %}" class="btn btn-success">
+                    <i class="fas fa-plus me-1"></i>Ajouter une route
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span>{{ routes|length }} route(s) trouvée(s)</span>
+    </div>
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr><th>Nom</th><th>État</th><th>Vitesse</th><th>Voies</th><th>Zone</th><th>Intersections</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+            {% for route in routes %}
+            <tr>
+                <td><strong>{{ route.nom }}</strong></td>
+                <td>
+                    {% if route.etat == 'ouvert' %}<span class="badge bg-success">Ouverte</span>
+                    {% elif route.etat == 'ferme' %}<span class="badge bg-danger">Fermée</span>
+                    {% else %}<span class="badge bg-warning text-dark">Travaux</span>{% endif %}
+                </td>
+                <td>{{ route.vitesse_limite }} km/h</td>
+                <td>{{ route.nb_voies }}</td>
+                <td>{{ route.zone|default:"—" }}</td>
+                <td>{{ route.intersections.count }}</td>
+                <td>
+                    <a href="{% url 'route_detail' route.pk %}" class="btn btn-sm btn-outline-info py-0 px-2" title="Voir"><i class="fas fa-eye"></i></a>
+                    <a href="{% url 'route_update' route.pk %}" class="btn btn-sm btn-outline-primary py-0 px-2" title="Modifier"><i class="fas fa-edit"></i></a>
+                    <a href="{% url 'route_delete' route.pk %}" class="btn btn-sm btn-outline-danger py-0 px-2" title="Supprimer"><i class="fas fa-trash"></i></a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="7" class="text-center text-muted py-4">Aucune route trouvée.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block title %}{{ route.nom }}{% endblock %}
+{% block page_title %}<i class="fas fa-road me-2"></i>{{ route.nom }}{% endblock %}
+{% block content %}
+<div class="row g-3">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between">
+                <span>Informations de la route</span>
+                <a href="{% url 'route_update' route.pk %}" class="btn btn-sm btn-warning text-white">
+                    <i class="fas fa-edit me-1"></i>Modifier
+                </a>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tr><th style="width:200px">Nom</th><td>{{ route.nom }}</td></tr>
+                    <tr><th>État</th><td>
+                        {% if route.etat == 'ouvert' %}<span class="badge bg-success fs-6">Ouverte</span>
+                        {% elif route.etat == 'ferme' %}<span class="badge bg-danger fs-6">Fermée</span>
+                        {% else %}<span class="badge bg-warning text-dark fs-6">Travaux</span>{% endif %}
+                    </td></tr>
+                    <tr><th>Vitesse limite</th><td>{{ route.vitesse_limite }} km/h</td></tr>
+                    <tr><th>Nombre de voies</th><td>{{ route.nb_voies }}</td></tr>
+                    <tr><th>Sens de circulation</th><td>{{ route.get_sens_display }}</td></tr>
+                    <tr><th>Longueur</th><td>{{ route.longueur_km }} km</td></tr>
+                    <tr><th>Zone</th><td>{{ route.zone|default:"Non définie" }}</td></tr>
+                </table>
+            </div>
+        </div>
+        {% if route.incidents.exists %}
+        <div class="card mt-3">
+            <div class="card-header"><i class="fas fa-exclamation-triangle me-2"></i>Incidents associés</div>
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead><tr><th>Type</th><th>Statut</th><th>Gravité</th><th>Date</th></tr></thead>
+                    <tbody>
+                    {% for inc in route.incidents.all %}
+                    <tr>
+                        <td>{{ inc.get_type_display }}</td>
+                        <td><span class="badge bg-{% if inc.statut == 'actif' %}danger{% elif inc.statut == 'resolu' %}success{% else %}warning{% endif %}">{{ inc.get_statut_display }}</span></td>
+                        <td>{{ inc.get_gravite_display }}</td>
+                        <td>{{ inc.date_debut|date:"d/m/Y H:i" }}</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header"><i class="fas fa-map-signs me-2"></i>Intersections ({{ route.intersections.count }})</div>
+            <div class="card-body">
+                {% for inter in route.intersections.all %}
+                <div class="d-flex align-items-center mb-2 p-2 bg-light rounded">
+                    <i class="fas fa-crosshairs me-2 text-primary"></i>
+                    <span>{{ inter.nom }}</span>
+                </div>
+                {% empty %}
+                <p class="text-muted">Aucune intersection associée.</p>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="card mt-3">
+            <div class="card-header"><i class="fas fa-car me-2"></i>Véhicules sur cette route</div>
+            <div class="card-body">
+                <span class="fs-3 fw-bold text-primary">{{ route.vehicules.count }}</span>
+                <span class="text-muted"> véhicule(s)</span>
+            </div>
+        </div>
+        <a href="{% url 'route_list' %}" class="btn btn-secondary w-100 mt-3">
+            <i class="fas fa-arrow-left me-1"></i>Retour à la liste
+        </a>
+    </div>
+</div>
+{% endblock %}

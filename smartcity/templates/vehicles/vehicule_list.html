@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block title %}Véhicules{% endblock %}
+{% block page_title %}<i class="fas fa-car me-2"></i>Gestion des Véhicules{% endblock %}
+{% block content %}
+<div class="card mb-3">
+    <div class="card-body py-2">
+        <form method="get" class="row g-2 align-items-center">
+            <div class="col-md-3">{{ form.search }}</div>
+            <div class="col-md-2">{{ form.type }}</div>
+            <div class="col-md-2">{{ form.etat }}</div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100"><i class="fas fa-filter"></i> Filtrer</button>
+            </div>
+            <div class="col-md-3 text-end">
+                <a href="{% url 'vehicule_create' %}" class="btn btn-success">
+                    <i class="fas fa-plus me-1"></i>Ajouter
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="card">
+    <div class="card-header">{{ vehicules|length }} véhicule(s)</div>
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+            <thead><tr><th>Immatriculation</th><th>Type</th><th>État</th><th>Route actuelle</th><th>Vitesse</th><th>Batterie</th><th>Actions</th></tr></thead>
+            <tbody>
+            {% for v in vehicules %}
+            <tr>
+                <td><strong>{{ v.immatriculation }}</strong></td>
+                <td>
+                    {% if v.type == 'voiture' %}🚗{% elif v.type == 'bus' %}🚌{% elif v.type == 'camion' %}🚛{% elif v.type == 'moto' %}🏍{% elif v.type == 'electrique' %}⚡{% else %}🚨{% endif %}
+                    {{ v.get_type_display }}
+                </td>
+                <td>
+                    {% if v.etat == 'actif' %}<span class="badge bg-success">En circulation</span>
+                    {% elif v.etat == 'mission' %}<span class="badge bg-danger">Mission</span>
+                    {% elif v.etat == 'recharge' %}<span class="badge bg-info">Recharge</span>
+                    {% else %}<span class="badge bg-secondary">Arrêté</span>{% endif %}
+                </td>
+                <td>{{ v.route_actuelle|default:"—" }}</td>
+                <td>{{ v.vitesse_moyenne|floatformat:0 }} km/h</td>
+                <td>
+                    {% if v.niveau_batterie is not None %}
+                    <div class="progress" style="width:60px;height:12px" title="{{ v.niveau_batterie }}%">
+                        <div class="progress-bar {% if v.niveau_batterie < 20 %}bg-danger{% elif v.niveau_batterie < 50 %}bg-warning{% else %}bg-success{% endif %}"
+                             style="width:{{ v.niveau_batterie }}%"></div>
+                    </div>
+                    {% else %}—{% endif %}
+                </td>
+                <td>
+                    <a href="{% url 'vehicule_detail' v.pk %}" class="btn btn-sm btn-outline-info py-0 px-2"><i class="fas fa-eye"></i></a>
+                    <a href="{% url 'vehicule_update' v.pk %}" class="btn btn-sm btn-outline-primary py-0 px-2"><i class="fas fa-edit"></i></a>
+                    <a href="{% url 'vehicule_delete' v.pk %}" class="btn btn-sm btn-outline-danger py-0 px-2"><i class="fas fa-trash"></i></a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="7" class="text-center text-muted py-4">Aucun véhicule trouvé.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

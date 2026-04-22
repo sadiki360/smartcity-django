@@ -1,0 +1,214 @@
+{% extends 'base.html' %}
+{% block title %}Tableau de Bord{% endblock %}
+{% block page_title %}<i class="fas fa-tachometer-alt me-2"></i>Tableau de Bord Global{% endblock %}
+
+{% block content %}
+<div class="row g-3 mb-4">
+    <div class="col-xl-3 col-md-6">
+        <div class="stat-card" style="background:linear-gradient(135deg,#1B2E5E,#2d4a8a)">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div style="font-size:.8rem;opacity:.8">VÉHICULES TOTAL</div>
+                    <div style="font-size:2.5rem;font-weight:800">{{ total_vehicules }}</div>
+                </div>
+                <i class="fas fa-car fa-2x opacity-50"></i>
+            </div>
+            <a href="{% url 'vehicule_list' %}" class="text-white-50 text-decoration-none small">Voir tous →</a>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="stat-card" style="background:linear-gradient(135deg,#dc3545,#c82333)">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div style="font-size:.8rem;opacity:.8">INCIDENTS ACTIFS</div>
+                    <div style="font-size:2.5rem;font-weight:800">{{ incidents_actifs }}</div>
+                </div>
+                <i class="fas fa-exclamation-triangle fa-2x opacity-50"></i>
+            </div>
+            <a href="{% url 'incident_list' %}?statut=actif" class="text-white-50 text-decoration-none small">Voir tous →</a>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="stat-card" style="background:linear-gradient(135deg,#fd7e14,#e96b00)">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div style="font-size:.8rem;opacity:.8">MISSIONS EN COURS</div>
+                    <div style="font-size:2.5rem;font-weight:800">{{ missions_en_cours }}</div>
+                </div>
+                <i class="fas fa-ambulance fa-2x opacity-50"></i>
+            </div>
+            <a href="{% url 'mission_list' %}" class="text-white-50 text-decoration-none small">Voir toutes →</a>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="stat-card" style="background:linear-gradient(135deg,#198754,#146c43)">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div style="font-size:.8rem;opacity:.8">EV EN RECHARGE</div>
+                    <div style="font-size:2.5rem;font-weight:800">{{ ev_recharge }}</div>
+                </div>
+                <i class="fas fa-bolt fa-2x opacity-50"></i>
+            </div>
+            <a href="{% url 'parking_list' %}" class="text-white-50 text-decoration-none small">Voir parkings →</a>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-xl-4 col-md-6">
+        <div class="card h-100">
+            <div class="card-header"><i class="fas fa-traffic-light me-2"></i>État des Feux</div>
+            <div class="card-body">
+                <div class="row text-center g-2">
+                    <div class="col-4">
+                        <div class="p-3 rounded-3" style="background:#fff0f0">
+                            <div style="font-size:2rem">🔴</div>
+                            <div class="fw-bold fs-4 text-danger">{{ feux_rouge }}</div>
+                            <small class="text-muted">Rouge</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="p-3 rounded-3" style="background:#fff8f0">
+                            <div style="font-size:2rem">🟠</div>
+                            <div class="fw-bold fs-4 text-warning">{{ feux_orange }}</div>
+                            <small class="text-muted">Orange</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="p-3 rounded-3" style="background:#f0fff4">
+                            <div style="font-size:2rem">🟢</div>
+                            <div class="fw-bold fs-4 text-success">{{ feux_vert }}</div>
+                            <small class="text-muted">Vert</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-3 text-center">
+                    <a href="{% url 'feu_list' %}" class="btn btn-sm btn-outline-primary">Gérer les feux</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-4 col-md-6">
+        <div class="card h-100">
+            <div class="card-header"><i class="fas fa-parking me-2"></i>Parkings</div>
+            <div class="card-body">
+                <div class="row text-center g-2 mb-3">
+                    <div class="col-6">
+                        <div class="p-3 rounded-3 bg-light">
+                            <div class="fw-bold fs-3 text-success">{{ total_parkings }}</div>
+                            <small class="text-muted">Total</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="p-3 rounded-3" style="background:#fff0f0">
+                            <div class="fw-bold fs-3 text-danger">{{ parkings_satures }}</div>
+                            <small class="text-muted">Saturés</small>
+                        </div>
+                    </div>
+                </div>
+                <a href="{% url 'parking_list' %}" class="btn btn-sm btn-outline-primary w-100">Voir les parkings</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-4 col-md-6">
+        <div class="card h-100">
+            <div class="card-header"><i class="fas fa-road me-2"></i>Réseau Routier</div>
+            <div class="card-body">
+                <div class="row text-center g-2 mb-3">
+                    <div class="col-6">
+                        <div class="p-3 rounded-3 bg-light">
+                            <div class="fw-bold fs-3 text-success">{{ routes_ouvertes }}</div>
+                            <small class="text-muted">Ouvertes</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="p-3 rounded-3" style="background:#fff0f0">
+                            <div class="fw-bold fs-3 text-danger">{{ routes_fermees }}</div>
+                            <small class="text-muted">Fermées</small>
+                        </div>
+                    </div>
+                </div>
+                <a href="{% url 'route_list' %}" class="btn btn-sm btn-outline-primary w-100">Voir les routes</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-xl-5">
+        <div class="card">
+            <div class="card-header"><i class="fas fa-chart-pie me-2"></i>Véhicules par Type</div>
+            <div class="card-body"><canvas id="chartVehicules" height="220"></canvas></div>
+        </div>
+    </div>
+    <div class="col-xl-7">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="fas fa-exclamation-circle me-2"></i>Incidents Actifs Récents</span>
+                <a href="{% url 'incident_create' %}" class="btn btn-sm btn-warning text-white">+ Signaler</a>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead><tr><th>Type</th><th>Localisation</th><th>Gravité</th><th>Action</th></tr></thead>
+                    <tbody>
+                    {% for inc in derniers_incidents %}
+                    <tr>
+                        <td><span class="badge bg-danger">{{ inc.get_type_display }}</span></td>
+                        <td>{{ inc.localisation|truncatechars:35 }}</td>
+                        <td>
+                            {% if inc.gravite == 'critique' %}<span class="badge bg-dark">Critique</span>
+                            {% elif inc.gravite == 'grave' %}<span class="badge bg-danger">Grave</span>
+                            {% elif inc.gravite == 'moyen' %}<span class="badge bg-warning text-dark">Moyen</span>
+                            {% else %}<span class="badge bg-success">Faible</span>{% endif %}
+                        </td>
+                        <td><a href="{% url 'incident_resoudre' inc.pk %}" class="btn btn-sm btn-outline-success py-0 px-2" style="font-size:.75rem">✓</a></td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="4" class="text-center text-muted py-3">Aucun incident actif 🎉</td></tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if dernieres_missions %}
+<div class="card mt-3">
+    <div class="card-header"><i class="fas fa-ambulance me-2"></i>Missions Prioritaires en Cours</div>
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+            <thead><tr><th>Véhicule</th><th>Service</th><th>Départ</th><th>Destination</th><th>Depuis</th></tr></thead>
+            <tbody>
+            {% for m in dernieres_missions %}
+            <tr>
+                <td><strong>{{ m.vehicule.immatriculation }}</strong></td>
+                <td>
+                    {% if m.type_service == 'ambulance' %}<span class="badge bg-danger">🚑 Ambulance</span>
+                    {% elif m.type_service == 'pompiers' %}<span class="badge bg-warning text-dark">🚒 Pompiers</span>
+                    {% else %}<span class="badge bg-primary">🚓 Police</span>{% endif %}
+                </td>
+                <td>{{ m.depart }}</td><td>{{ m.destination }}</td>
+                <td class="text-muted small">{{ m.date_debut|timesince }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const labels = [{% for v in vehicules_par_type %}'{{ v.type }}'{% if not forloop.last %},{% endif %}{% endfor %}];
+const data   = [{% for v in vehicules_par_type %}{{ v.nb }}{% if not forloop.last %},{% endif %}{% endfor %}];
+if(data.length > 0){
+    new Chart(document.getElementById('chartVehicules'), {
+        type:'doughnut',
+        data:{labels, datasets:[{data, backgroundColor:['#1B2E5E','#4A90C4','#C8973A','#198754','#dc3545','#fd7e14'], borderWidth:2}]},
+        options:{responsive:true, plugins:{legend:{position:'bottom'}}}
+    });
+}
+</script>
+{% endblock %}

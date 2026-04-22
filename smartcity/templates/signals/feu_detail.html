@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block title %}Feu {{ feu.pk }}{% endblock %}
+{% block page_title %}<i class="fas fa-traffic-light me-2"></i>Feu — {{ feu.intersection }}{% endblock %}
+{% block content %}
+<div class="row g-3">
+    <div class="col-md-5">
+        <div class="card text-center">
+            <div class="card-header">État actuel</div>
+            <div class="card-body">
+                <div class="d-inline-block p-4 rounded-3 mb-3" style="background:#222">
+                    <div class="rounded-circle mx-auto mb-2 {% if feu.etat == 'rouge' %}bg-danger{% else %}bg-dark{% endif %}" style="width:60px;height:60px"></div>
+                    <div class="rounded-circle mx-auto mb-2 {% if feu.etat == 'orange' %}bg-warning{% else %}bg-dark{% endif %}" style="width:60px;height:60px"></div>
+                    <div class="rounded-circle mx-auto {% if feu.etat == 'vert' %}bg-success{% else %}bg-dark{% endif %}" style="width:60px;height:60px"></div>
+                </div>
+                <h4>{{ feu.get_etat_display }}</h4>
+                <p class="text-muted">Mode : {{ feu.get_mode_display }}</p>
+                <a href="{% url 'feu_changer' feu.pk %}" class="btn btn-warning text-dark w-100 mb-2">⟳ Changer l'état</a>
+                <a href="{% url 'feu_update' feu.pk %}" class="btn btn-outline-primary w-100">Modifier</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-7">
+        <div class="card mb-3">
+            <div class="card-header"><i class="fas fa-history me-2"></i>Historique des changements</div>
+            <div class="card-body p-0">
+                <table class="table table-sm mb-0">
+                    <thead><tr><th>Date</th><th>Ancien état</th><th>Nouvel état</th><th>Commentaire</th></tr></thead>
+                    <tbody>
+                    {% for h in historique %}
+                    <tr>
+                        <td class="small text-muted">{{ h.date_changement|date:"d/m/Y H:i" }}</td>
+                        <td>{{ h.ancien_etat }}</td>
+                        <td><strong>{{ h.nouvel_etat }}</strong></td>
+                        <td class="text-muted">{{ h.commentaire }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="4" class="text-center text-muted">Aucun historique.</td></tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <a href="{% url 'feu_list' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-1"></i>Retour
+        </a>
+    </div>
+</div>
+{% endblock %}

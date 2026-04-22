@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block title %}{{ vehicule.immatriculation }}{% endblock %}
+{% block page_title %}<i class="fas fa-car me-2"></i>{{ vehicule.immatriculation }}{% endblock %}
+{% block content %}
+<div class="row g-3">
+    <div class="col-md-7">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between">
+                <span>Informations du véhicule</span>
+                <a href="{% url 'vehicule_update' vehicule.pk %}" class="btn btn-sm btn-warning text-white"><i class="fas fa-edit me-1"></i>Modifier</a>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tr><th style="width:200px">Immatriculation</th><td><strong>{{ vehicule.immatriculation }}</strong></td></tr>
+                    <tr><th>Type</th><td>{{ vehicule.get_type_display }}</td></tr>
+                    <tr><th>État</th><td>
+                        {% if vehicule.etat == 'actif' %}<span class="badge bg-success fs-6">En circulation</span>
+                        {% elif vehicule.etat == 'mission' %}<span class="badge bg-danger fs-6">En mission</span>
+                        {% elif vehicule.etat == 'recharge' %}<span class="badge bg-info fs-6">En recharge</span>
+                        {% else %}<span class="badge bg-secondary fs-6">Arrêté</span>{% endif %}
+                    </td></tr>
+                    <tr><th>Vitesse moyenne</th><td>{{ vehicule.vitesse_moyenne }} km/h</td></tr>
+                    <tr><th>Route actuelle</th><td>{{ vehicule.route_actuelle|default:"—" }}</td></tr>
+                    <tr><th>Départ</th><td>{{ vehicule.point_depart|default:"—" }}</td></tr>
+                    <tr><th>Destination</th><td>{{ vehicule.destination|default:"—" }}</td></tr>
+                    {% if vehicule.niveau_batterie is not None %}
+                    <tr><th>Batterie</th><td>
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="progress flex-grow-1" style="height:16px">
+                                <div class="progress-bar {% if vehicule.niveau_batterie < 20 %}bg-danger{% elif vehicule.niveau_batterie < 50 %}bg-warning{% else %}bg-success{% endif %}"
+                                     style="width:{{ vehicule.niveau_batterie }}%">{{ vehicule.niveau_batterie }}%</div>
+                            </div>
+                        </div>
+                    </td></tr>
+                    {% endif %}
+                    {% if vehicule.priorite > 0 %}
+                    <tr><th>Priorité</th><td><span class="badge bg-danger fs-6">Niveau {{ vehicule.priorite }}</span></td></tr>
+                    {% endif %}
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-5">
+        <div class="card">
+            <div class="card-header"><i class="fas fa-tasks me-2"></i>Missions ({{ vehicule.missions.count }})</div>
+            <div class="card-body p-0">
+                {% for m in vehicule.missions.all %}
+                <div class="p-3 border-bottom">
+                    <div class="fw-bold">{{ m.get_type_service_display }}</div>
+                    <div class="text-muted small">{{ m.depart }} → {{ m.destination }}</div>
+                    <span class="badge {% if m.statut == 'en_cours' %}bg-danger{% elif m.statut == 'terminee' %}bg-success{% else %}bg-secondary{% endif %}">{{ m.get_statut_display }}</span>
+                </div>
+                {% empty %}
+                <p class="text-muted p-3">Aucune mission.</p>
+                {% endfor %}
+            </div>
+        </div>
+        <a href="{% url 'vehicule_list' %}" class="btn btn-secondary w-100 mt-3">
+            <i class="fas fa-arrow-left me-1"></i>Retour à la liste
+        </a>
+    </div>
+</div>
+{% endblock %}

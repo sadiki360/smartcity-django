@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block title %}{{ parking.nom }}{% endblock %}
+{% block page_title %}<i class="fas fa-parking me-2"></i>{{ parking.nom }}{% endblock %}
+{% block content %}
+<div class="row g-3">
+    <div class="col-md-7">
+        <div class="card mb-3">
+            <div class="card-header d-flex justify-content-between">
+                <span>Informations</span>
+                <a href="{% url 'parking_update' parking.pk %}" class="btn btn-sm btn-warning text-white"><i class="fas fa-edit me-1"></i>Modifier</a>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tr><th>Adresse</th><td>{{ parking.adresse }}</td></tr>
+                    <tr><th>Zone</th><td>{{ parking.zone|default:"Non définie" }}</td></tr>
+                    <tr><th>Capacité</th><td>{{ parking.capacite_totale }} places</td></tr>
+                    <tr><th>Places libres</th><td class="text-success fw-bold">{{ parking.places_disponibles }}</td></tr>
+                    <tr><th>Taux d'occupation</th><td>
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="progress flex-grow-1" style="height:16px">
+                                <div class="progress-bar {% if parking.taux_occupation >= 90 %}bg-danger{% elif parking.taux_occupation >= 70 %}bg-warning{% else %}bg-success{% endif %}"
+                                     style="width:{{ parking.taux_occupation }}%">{{ parking.taux_occupation }}%</div>
+                            </div>
+                        </div>
+                    </td></tr>
+                    <tr><th>Tarif</th><td>{{ parking.tarif_horaire }} MAD/heure</td></tr>
+                    <tr><th>État</th><td>
+                        {% if parking.ouvert %}<span class="badge bg-success">Ouvert</span>
+                        {% else %}<span class="badge bg-danger">Fermé</span>{% endif %}
+                    </td></tr>
+                </table>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header"><i class="fas fa-bolt me-2"></i>Bornes de Recharge ({{ bornes.count }})</div>
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead><tr><th>N°</th><th>Type</th><th>Puissance</th><th>État</th><th>Véhicule</th></tr></thead>
+                    <tbody>
+                    {% for b in bornes %}
+                    <tr>
+                        <td><strong>{{ b.numero }}</strong></td>
+                        <td>{{ b.get_type_charge_display }}</td>
+                        <td>{{ b.puissance_kw }} kW</td>
+                        <td>
+                            {% if b.etat == 'libre' %}<span class="badge bg-success">Libre</span>
+                            {% elif b.etat == 'occupe' %}<span class="badge bg-warning text-dark">Occupée</span>
+                            {% else %}<span class="badge bg-danger">Panne</span>{% endif %}
+                        </td>
+                        <td>{{ b.vehicule_en_charge|default:"—" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="5" class="text-center text-muted">Aucune borne.</td></tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-5">
+        <div class="card text-center mb-3">
+            <div class="card-body py-4">
+                <div style="font-size:4rem">🅿</div>
+                <h3 class="text-primary">{{ parking.places_disponibles }}</h3>
+                <p class="text-muted">places disponibles sur {{ parking.capacite_totale }}</p>
+                <div class="progress" style="height:20px">
+                    <div class="progress-bar {% if parking.taux_occupation >= 90 %}bg-danger{% elif parking.taux_occupation >= 70 %}bg-warning{% else %}bg-success{% endif %}"
+                         style="width:{{ parking.taux_occupation }}%"></div>
+                </div>
+            </div>
+        </div>
+        <a href="{% url 'parking_list' %}" class="btn btn-secondary w-100">
+            <i class="fas fa-arrow-left me-1"></i>Retour
+        </a>
+    </div>
+</div>
+{% endblock %}

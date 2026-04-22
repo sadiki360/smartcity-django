@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block title %}Incident{% endblock %}
+{% block page_title %}<i class="fas fa-exclamation-triangle me-2"></i>Détail Incident{% endblock %}
+{% block content %}
+<div class="row g-3">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between">
+                <span>Informations</span>
+                <div class="d-flex gap-2">
+                    {% if incident.statut != 'resolu' %}
+                    <a href="{% url 'incident_resoudre' incident.pk %}" class="btn btn-sm btn-success">✓ Résoudre</a>
+                    {% endif %}
+                    <a href="{% url 'incident_update' incident.pk %}" class="btn btn-sm btn-warning text-white"><i class="fas fa-edit"></i></a>
+                </div>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tr><th style="width:200px">Type</th><td>{{ incident.get_type_display }}</td></tr>
+                    <tr><th>Description</th><td>{{ incident.description }}</td></tr>
+                    <tr><th>Localisation</th><td>{{ incident.localisation }}</td></tr>
+                    <tr><th>Gravité</th><td>
+                        {% if incident.gravite == 'critique' %}<span class="badge bg-dark fs-6">Critique</span>
+                        {% elif incident.gravite == 'grave' %}<span class="badge bg-danger fs-6">Grave</span>
+                        {% elif incident.gravite == 'moyen' %}<span class="badge bg-warning text-dark fs-6">Moyen</span>
+                        {% else %}<span class="badge bg-success fs-6">Faible</span>{% endif %}
+                    </td></tr>
+                    <tr><th>Statut</th><td>
+                        {% if incident.statut == 'actif' %}<span class="badge bg-danger fs-6">Actif</span>
+                        {% elif incident.statut == 'en_cours' %}<span class="badge bg-warning text-dark fs-6">En cours</span>
+                        {% else %}<span class="badge bg-success fs-6">Résolu</span>{% endif %}
+                    </td></tr>
+                    <tr><th>Durée estimée</th><td>{{ incident.duree_estimee }} minutes</td></tr>
+                    <tr><th>Début</th><td>{{ incident.date_debut|date:"d/m/Y H:i" }}</td></tr>
+                    {% if incident.date_resolution %}
+                    <tr><th>Résolution</th><td>{{ incident.date_resolution|date:"d/m/Y H:i" }}</td></tr>
+                    {% endif %}
+                    {% if incident.route_alternative %}
+                    <tr><th>Route alternative</th><td><span class="badge bg-info fs-6">{{ incident.route_alternative }}</span></td></tr>
+                    {% endif %}
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card mb-3">
+            <div class="card-header"><i class="fas fa-road me-2"></i>Routes impactées</div>
+            <div class="card-body p-0">
+                {% for r in incident.routes_impactees.all %}
+                <div class="p-2 border-bottom">🚧 {{ r.nom }}</div>
+                {% empty %}<p class="text-muted p-3">Aucune route associée.</p>{% endfor %}
+            </div>
+        </div>
+        <div class="card mb-3">
+            <div class="card-header"><i class="fas fa-car me-2"></i>Véhicules impactés</div>
+            <div class="card-body p-0">
+                {% for v in incident.vehicules_impactes.all %}
+                <div class="p-2 border-bottom">🚗 {{ v.immatriculation }}</div>
+                {% empty %}<p class="text-muted p-3">Aucun véhicule impacté.</p>{% endfor %}
+            </div>
+        </div>
+        <a href="{% url 'incident_list' %}" class="btn btn-secondary w-100">
+            <i class="fas fa-arrow-left me-1"></i>Retour
+        </a>
+    </div>
+</div>
+{% endblock %}

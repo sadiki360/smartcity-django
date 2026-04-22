@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %}Supprimer{% endblock %}
+{% block page_title %}Confirmer la suppression{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <i class="fas fa-trash me-2"></i>Confirmation de suppression
+            </div>
+            <div class="card-body text-center py-4">
+                <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+                <h5>Voulez-vous vraiment supprimer ce(tte) {{ type }} ?</h5>
+                <p class="text-muted fw-bold">{{ obj }}</p>
+                <p class="text-danger small">Cette action est irréversible.</p>
+                <form method="post" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger me-2">
+                        <i class="fas fa-trash me-1"></i>Oui, supprimer
+                    </button>
+                </form>
+                <a href="javascript:history.back()" class="btn btn-secondary">
+                    <i class="fas fa-times me-1"></i>Annuler
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
